@@ -36,6 +36,8 @@ struct ContentView: View {
                     }
                 }
             }.navigationTitle("Resorts")
+            
+            WelcomeView()
         }
     }
 }
