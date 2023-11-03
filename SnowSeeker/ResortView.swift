@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct ResortView: View {
+    // tells us whether we have a regular or compact size class
+    @Environment(\.horizontalSizeClass) var sizeClass
+    @Environment(\.dynamicTypeSize) var typeSize
+    
     let resort: Resort
     
     var body: some View {
@@ -18,8 +22,13 @@ struct ResortView: View {
                     .scaledToFit()
                 
                 HStack {
-                    ResortDetailsView(resort: resort)
-                    SkiDetailsView(resort: resort)
+                    if sizeClass == .compact && typeSize > .large {
+                        VStack(spacing: 10) { ResortDetailsView(resort: resort) }
+                        VStack(spacing: 10) { SkiDetailsView(resort: resort) }
+                    } else {
+                        ResortDetailsView(resort: resort)
+                        SkiDetailsView(resort: resort)
+                    }
                 }
                 .padding(.vertical)
                 .background(Color.primary.opacity(0.1))
