@@ -9,14 +9,29 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var searchText = ""
+    @State private var sortBy: String = "Default"
+    @State private var showingSortByPicker = false
     @StateObject var favorites = Favorites()
     let resorts: [Resort] = Bundle.main.decode("resorts.json")
     
+    var sortedResorts: [Resort] {
+        switch sortBy {
+        case "Alphabetical":
+            return resorts.sorted { $0.name < $1.name }
+            
+        case "Country":
+            return resorts.sorted { $0.country < $1.country }
+            
+        default:
+            return resorts
+        }
+    }
+    
     var filteredResorts: [Resort] {
         if searchText.isEmpty {
-            return resorts
+            return sortedResorts
         } else {
-            return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            return sortedResorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
     
@@ -56,6 +71,23 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Resorts")
+            .toolbar(content: {
+                ToolbarItem {
+                    Button("Sort by") {
+                        showingSortByPicker.toggle()
+
+                    }
+                    .sheet(isPresented: $showingSortByPicker) {
+                        Picker("Sort by", selection: $sortBy) {
+                            ForEach(["Default", "Alphabetical", "Country"], id: \.self) {
+                                Text($0)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .presentationDetents([.medium])
+                    }
+                }
+            })
             .searchable(text: $searchText, prompt: "Search for a resort")
             
             WelcomeView()
