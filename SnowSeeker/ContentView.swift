@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var searchText = ""
+    @StateObject var favorites = Favorites()
     let resorts: [Resort] = Bundle.main.decode("resorts.json")
     
     var filteredResorts: [Resort] {
@@ -25,23 +26,32 @@ struct ContentView: View {
                 NavigationLink {
                     ResortView(resort: resort)
                 } label: {
-                    Image(resort.country)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 50)
-                        .clipShape(
-                            RoundedRectangle(cornerRadius: 5)
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(.black, lineWidth: 1)
-                        )
-                    
-                    VStack(alignment: .leading) {
-                        Text(resort.name)
-                            .font(.headline)
-                        Text("\(resort.runs) runs")
-                            .foregroundColor(.secondary)
+                    HStack {
+                        Image(resort.country)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 50)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 5)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(.black, lineWidth: 1)
+                            )
+                        
+                        VStack(alignment: .leading) {
+                            Text(resort.name)
+                                .font(.headline)
+                            Text("\(resort.runs) runs")
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        if favorites.contains(resort) {
+                            Spacer()
+                            Image(systemName: "heart.fill")
+                                .accessibilityLabel("This is a favorite resort")
+                                .foregroundColor(.red)
+                        }
                     }
                 }
             }
@@ -50,6 +60,7 @@ struct ContentView: View {
             
             WelcomeView()
         }
+        .environmentObject(favorites)
     }
 }
 
