@@ -13,7 +13,18 @@ class Favorites: ObservableObject {
     private let saveKey = "Favorites"
     
     init() {
-        resorts = []
+        if let savedResorts = UserDefaults.standard.object(forKey: saveKey) as? Data {
+            print(savedResorts)
+            let decoder = JSONDecoder()
+            if let loadedResorts = try? decoder.decode(Set<String>.self, from: savedResorts) {
+                print(loadedResorts)
+                resorts = loadedResorts
+            } else {
+                resorts = []
+            }
+        } else {
+            resorts = []
+        }
     }
     
     func contains(_ resort: Resort) -> Bool {
@@ -28,11 +39,15 @@ class Favorites: ObservableObject {
     
     func remove(_ resort: Resort) {
         objectWillChange.send()
-        resorts.insert(resort.id)
+        resorts.remove(resort.id)
         save()
     }
     
     func save() {
-        
+        print(resorts)
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(resorts) {
+            UserDefaults.standard.set(encoded, forKey: saveKey)
+        }
     }
 }
