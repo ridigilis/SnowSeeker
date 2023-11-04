@@ -24,6 +24,14 @@ struct ResortView: View {
                 Image(decorative: resort.id)
                     .resizable()
                     .scaledToFit()
+                    .overlay(alignment: .bottomTrailing, content: {
+                        Text("Credit: \(resort.imageCredit)")
+                            .font(.caption2)
+                            .foregroundStyle(Color.primary.opacity(0.8))
+                            .padding(3)
+                            .background(Color.primary.opacity(0.2))
+                            .accessibilityLabel("Image Credit: \(resort.imageCredit)")
+                    })
                 
                 HStack {
                     if sizeClass == .compact && typeSize > .large {
